@@ -1,0 +1,34 @@
+# use this database to generate a "Makefile.gen"
+#
+# variables you can use:
+# $(O) -- the output folder
+# $(T) -- the template folder of the tool
+# $(DB) -- the database to use
+---
+database:
+    # plugin for your custom addional tasks. maybe database conversion or
+    # verification?
+    extraIncs:
+        - "Makefile.yamlFromScratch"
+        - "Makefile.extraInfo"
+
+    templates:
+        # the keys are also targets in the generated makefile
+        cpp:
+            # this file is searched for in $(T)
+            templateFilename: "test.cpp.template"
+            outFilename: "test.cpp"
+        dir:
+            templateFilename: "test.cpp.template"
+            # better: give outputDir explitly? this way the mkdir-calls
+            # can be reduced. maybe also strip '.template' ending
+            # automatically?
+            #
+            # directory relative to $(O)
+            outFilename: "dir/test.cpp"
+        cmake:
+            templateFilename: "CMakeLists.txt.template"
+            outFilename: "CMakeLists.txt"
+            # additional variables can be inserted into the template
+            extraVariable: "projectName=testproject"
+...

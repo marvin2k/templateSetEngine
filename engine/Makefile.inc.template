@@ -1,0 +1,40 @@
+<!--(set_escape)-->
+none
+<!--(end)-->
+# automatically generated to use make for dependency resolution of
+# template generation. do not edit.
+#
+# generated from template @!templateDatabase!@ at @!date!@
+#
+# NOTE: the variable $(T) will hold the actual folder of the template at
+# runtime
+
+<!--(if default("database['extraIncs']"))-->
+# additional handwritten makefile includes:
+    <!--(for inc in database["extraIncs"])-->
+include $(T)@!inc!@
+    <!--(end)-->
+<!--(end)-->
+
+#
+# now all the templates given in the config file
+#
+
+<!--(for template, props in database["templates"].iteritems())-->
+# output filename of name '@!template!@' to be written into
+# $(O)@!props["outFilename"]!@
+$(O)@!props["outFilename"]!@ @!template!@: $(T)@!props["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+	@mkdir --parent $(dir $(O)@!props["outFilename"]!@)
+	$(PYRATEMP)  -f $(DB) <!--(if default("props['extraVariable']"))-->-d @!props["extraVariable"]!@ <!--(end)--> $< > $(O)@!props["outFilename"]!@ || rm $(O)@!props["outFilename"]!@
+
+# attach ourself to the "generate" meta target
+generate:: $(O)@!props["outFilename"]!@
+# add generated file to clean target
+clean_template::
+	rm -f $(O)@!props["outFilename"]!@
+
+<!--(end)-->
+
+# printing info
+info::
+	@echo "info: generated '$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))'"

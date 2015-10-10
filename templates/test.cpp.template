@@ -1,0 +1,10 @@
+<!--(set_escape)-->
+none
+<!--(end)-->
+#include <iostream>
+
+int main(){
+    std::cout << "@!nothing!@\n";
+    return 0;
+}
+
