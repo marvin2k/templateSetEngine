@@ -4,7 +4,7 @@ none
 #include <iostream>
 
 int main(){
-    std::cout << "@!nothing!@\n";
+    std::cout << "@!ident!@\n";
     return 0;
 }
 

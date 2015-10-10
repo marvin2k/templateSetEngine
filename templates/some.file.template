@@ -1,0 +1,10 @@
+<!--(set_escape)-->
+none
+<!--(end)-->
+
+this is a file...
+
+@!ident!@
+<!--(for e in somelist)-->
+- @!e!@
+<!--(end)-->

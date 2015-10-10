@@ -17,15 +17,14 @@ database:
         cpp:
             # this file is searched for in $(T)
             templateFilename: "test.cpp.template"
+            # and this put relative to $(O)
             outFilename: "test.cpp"
         dir:
-            templateFilename: "test.cpp.template"
+            templateFilename: "some.file.template"
             # better: give outputDir explitly? this way the mkdir-calls
             # can be reduced. maybe also strip '.template' ending
             # automatically?
-            #
-            # directory relative to $(O)
-            outFilename: "dir/test.cpp"
+            outFilename: "dir/some.file"
         cmake:
             templateFilename: "CMakeLists.txt.template"
             outFilename: "CMakeLists.txt"

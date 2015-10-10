@@ -1,3 +1,7 @@
+# this is just a test input database
 ---
-nothing: "no"
+ident: "test"
+somelist:
+    - "first"
+    - "second"
 ...
