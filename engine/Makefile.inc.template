@@ -4,12 +4,15 @@ none
 # automatically generated to use make for dependency resolution of
 # template generation. do not edit.
 #
-# generated from template @!templateDatabase!@ at @!date!@
+# generated from template dscription in:
+# @!templateDatabase!@
+#
+# generated at: @!date!@
 #
 # the set name is "@!templateSetName!@
 #
 # NOTE: the variable $(T) will hold the actual folder of the template at
-# runtime
+# runtime. other variables: $(DB) $(O)
 
 <!--(if exists("extraMakefileIncludes"))-->
 # additional handwritten makefile includes:
@@ -30,6 +33,9 @@ $(O)database.verified: $(DB) $(T)@!databaseSchema!@ | $(O)
 # chain also to the "validate" target which is used by the main-makefile
 # to validate the template itself
 validate:: $(O)database.verified
+# attach to clean rule:
+clean_template::
+	rm -f $(O)database.verified
 
 <!--(else)-->
 # no schema provided, no validation possible

@@ -1,6 +1,9 @@
 # set these from outside
 ifndef T
-    $(error set directory of templates to T)
+    $(error set directory of templateSet to T)
+endif
+ifndef O
+    $(error set output directory of templateSet to O)
 endif
 ifndef PYRATOOL
     $(error set location of pyratool to PYRATOOL)
@@ -12,46 +15,52 @@ endif
 #endif
 
 # some variables:
-TEMPL_DB=$(T)template.yaml
+T_DB=$(T)template.yaml
+# how to call the tool we actually rely on
 PYRATEMP=python $(PYRATOOL)
-mkfile_path := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-TEMPL_SCH=$(mkfile_path)template.yaml.schema
+# "$(E)" contains the location of the engine itself
+E:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# the schema of the 'template.yaml' description
+T_SCH=$(E)template.yaml.schema
 
-ifeq ("$(wildcard $(TEMPL_DB))","")
-    $(error no 'template.yaml' found in '$(T)')
+# checking file existence
+ifeq ("$(wildcard $(T_DB))","")
+    $(error no 'template.yaml' found in template folder '$(T)')
 endif
 
-# declare the self-verification before including the generated Makefile.
+# if we do not know what to do then just start to work
+all: generate
+
+# declare some self-verification before including the generated Makefile.
 # this way we perform these steps before trying to optional validate the
-# provided user datadase itself.
+# provided user database itself.
 
 # validate the schema for the "template.yaml" templateSet description
 #
-# great, return value isl always zero... directly piping to grep will
-# hide the error message... so output into "out" file, grep separatly to
-# check. output the error or provide target of recipe.
-$(O)template.verified: $(TEMPL_DB) $(TEMPL_SCH) | $(O)
-	kwalify -lf $(TEMPL_SCH) $(TEMPL_DB) > $@.out
+# great, the return value of kwalify is always zero... directly piping to
+# grep will hide the error message... so output into "out" file, grep
+# separatly to check. output the error or create the target of recipe.
+$(O)template.verified: $(T_DB) $(T_SCH) | $(O)
+	kwalify -lf $(T_SCH) $(T_DB) > $@.out
 	@grep "$<#0: valid" $@.out >/dev/null \
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
 
 # validate the schema itself. i don't think this has to be done often. but it can't hurt either ;-)
-$(O)meta.verified: $(TEMPL_SCH) | $(O)
+$(O)meta.verified: $(T_SCH) | $(O)
 	kwalify -lm $< > $@.out
 	@grep "$<#0: valid" $@.out >/dev/null \
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
 
-# this is used to collect "validation" steps on the way
+# this is used to collect the various "validation" steps. the generated
+# Makefile.inc might attach here.
 validate:: $(O)meta.verified $(O)template.verified
 
 # Note: if there is an syntax error in the generated Makefile.in, the
 # file has to be deleted manually... also a problem: when this file is
 # empty it will not be regenerated and nothing happens
 -include $(O)Makefile.inc
-
-all: generate
 
 # self-documenting ,-)
 sysdeps:
@@ -60,13 +69,15 @@ sysdeps:
 # printing the info after all inclusions are done
 info::
 	@echo "info from main-makefile:"
-	@echo "this makefile folder: '$(mkfile_path)'"
+	@echo "this makefile folder: '$(E)'"
 	@echo "template folder: '$(T)'"
+	@echo "template database: '$(T_DB)'"
+	@echo "template schema: '$(T_SCH)'"
 	@echo "output folder: '$(O)'"
 	@echo "database: '$(DB)'"
 	@echo "pyratemp: '$(PYRATOOL)'"
 
-# obtaining the tool if it is not there
+# for the time beeing: obtain the tool if it is not there
 pyratemp-0.3.2:
 	wget -qO- http://www.simple-is-better.org/template/pyratemp-0.3.2.tgz | tar xvz
 
@@ -75,12 +86,13 @@ $(O):
 	mkdir --parent $@
 
 # the templates own bootstrap rule:
-$(O)Makefile.inc: $(mkfile_path)Makefile.inc.template $(TEMPL_DB) | $(O)
-	$(PYRATEMP) -d templateDatabase=$(TEMPL_DB) -f $(TEMPL_DB) $< > $@ || rm $@
+$(O)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O)
+	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || rm $@
 
 # diligent cleaning
 clean: clean_template
 	rm -f $(O)Makefile.inc
+	rm -f $(O)meta.verified $(O)template.verified
 
 # this is the collection of the main-task: first validate everything,
 # then generate the templates.
