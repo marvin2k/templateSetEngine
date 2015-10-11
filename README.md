@@ -15,7 +15,7 @@ together with a `$(T)template.yaml` describing what files have to be processes.
 See `engine/template.yaml.schema` what is allowed.
 
 Each templateSet is suitable for one type of input database understood by
-[pyratemp][1] (which is yaml or json). Pyratemp was choosen because it tries to
+[pyratemp][1] (which is yaml or json). Pyratemp was chosen because it tries to
 leverage a strong model/view separation and looks simple enough.
 
 ## Idea
@@ -59,7 +59,7 @@ models of each template file.
 ## Validation
 
 The tool uses [kwalify][2] to verify the `$(T)template.yaml` of a templateSet
-and optionally the user-provided database. To mark successfull verification, the
+and optionally the user-provided database. To mark successful verification, the
 following files are created:
 
 - `$(O)meta.verified`: The description of the tools schema file for the
@@ -73,6 +73,8 @@ prevents users of the templateSet from making mistakes.
 
 Since the `kwalify` tool will return 0 even on failure (!) some hidden shell trickery has to be performed.
 
+Note: Validation might be broken (read: missing) when verifying with one database, then using another one with an earlier time stamp to generate...
+
 ## Wrapper script
 
 Options to underlying `make` can be passed as command line options. See wrapper script `engine/engine.py`. Call for example:
@@ -81,7 +83,7 @@ Options to underlying `make` can be passed as command line options. See wrapper 
 $ ./engine/engine.py -h
 ```
 
-Note that unkown options are passed on to `make`, especially useful for
+Note that unknown options are passed on to `make`, especially useful for
 debugging. To generate the actual files of the example templateSet in this
 repository using 4 processes in parallel:
 
@@ -95,7 +97,7 @@ wrapper-script.
 
 ## Example templateSet
 
-Contains a simple cmake project. The generated files can then be used:
+Contains a simple CMake project. The generated files can then be used:
 
 ```bash
 mkdir outdir/build
@@ -110,9 +112,9 @@ cd -
 
 - Might wanna move to [Rx][3] as schema language? Project does look more
   alive.
-- careful, the example template uses the "XML_DB" hack to demonstrate internal
-  database conversion, like xml2yaml... this feature is not tought-out...
-- the shipping of pyratemp is a problem...
+- Careful, the example template uses the "XML_DB" hack to demonstrate internal
+  database conversion, like xml2yaml... This feature is not thought-out...
+- Shipping of pyratemp is a problem...
 
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify
