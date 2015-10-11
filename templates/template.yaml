@@ -5,11 +5,14 @@
 # $(T) -- the template folder of the tool
 # $(DB) -- the database to use
 ---
+# the schema is used to check the database passed into the template engine. is
+# optional but highly recommended.
 databaseSchema: "database.yaml.schema"
+# not sure if this name is really needed...
 templateSetName: "someName"
-    # plugin for your custom addional tasks. maybe database conversion or
-    # verification? could also plugin template-file results from this
-    # very template-set.
+    # plugin for your custom additional tasks. maybe database conversion or
+    # verification? could also plugin generated makefiles from this very
+    # template-set.
 extraMakefileIncludes:
     - "Makefile.yamlFromScratch"
     - "Makefile.extraInfo"

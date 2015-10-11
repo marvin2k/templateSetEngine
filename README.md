@@ -38,7 +38,11 @@ Contra:
 ## Design
 
 Uses the template engine [pyratemp][1] and the description of the templateSet to
-generate the `$(T)Makefile.inc` to control the template-generation process.
+generate the `$(T)Makefile.inc` which controls the template-generation process.
+This file is included into the main-makefile together with a target to create
+it. The file is not there initially, `make` recognises the target to create the
+file, executes it reevaluates everything to incorporate the added targets.
+
 Someone can then execute the `generate` target to call the template engine and
 whatever `make` thinks it has to call to perform the whole generation. After the
 initial bootstrap only the relevant commands are re-executed according to the
