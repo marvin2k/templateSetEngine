@@ -6,32 +6,51 @@ none
 #
 # generated from template @!templateDatabase!@ at @!date!@
 #
+# the set name is "@!templateSetName!@
+#
 # NOTE: the variable $(T) will hold the actual folder of the template at
 # runtime
 
-<!--(if default("database['extraIncs']"))-->
+<!--(if exists("extraMakefileIncludes"))-->
 # additional handwritten makefile includes:
-    <!--(for inc in database["extraIncs"])-->
+    <!--(for inc in extraMakefileIncludes)-->
 include $(T)@!inc!@
     <!--(end)-->
+<!--(end)-->
+
+<!--(if exists("databaseSchema"))-->
+# validation of optional schema file, using "kwalify". doing shell
+# trickery to fix always-return-0 from kwalify
+$(O)database.verified: $(DB) $(T)@!databaseSchema!@ | $(O)
+	kwalify -lf $(T)@!databaseSchema!@ $(DB) > $@.out
+	@grep "$<#0: valid" $@.out >/dev/null \
+	    || (cat $@.out && rm -f $@ && false) \
+	    && (mv $@.out $@)
+
+# chain also to the "validate" target which is used by the main-makefile
+# to validate the template itself
+validate:: $(O)database.verified
+
+<!--(else)-->
+# no schema provided, no validation possible
 <!--(end)-->
 
 #
 # now all the templates given in the config file
 #
 
-<!--(for template, props in database["templates"].iteritems())-->
-# output filename of name '@!template!@' to be written into
-# $(O)@!props["outFilename"]!@
-$(O)@!props["outFilename"]!@ @!template!@: $(T)@!props["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
-	@mkdir --parent $(dir $(O)@!props["outFilename"]!@)
-	$(PYRATEMP)  -f $(DB) <!--(if default("props['extraVariable']"))-->-d @!props["extraVariable"]!@ <!--(end)--> $< > $(O)@!props["outFilename"]!@ || rm $(O)@!props["outFilename"]!@
+<!--(for templ in templates)-->
+# output filename of name '@!templ["name"]!@' to be written into
+# $(O)@!templ["outFilename"]!@
+$(O)@!templ["outFilename"]!@ @!templ["name"]!@: $(T)@!templ["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
+	$(PYRATEMP)  -f $(DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || rm $(O)@!templ["outFilename"]!@
 
 # attach ourself to the "generate" meta target
-generate:: $(O)@!props["outFilename"]!@
+generate_template:: $(O)@!templ["outFilename"]!@
 # add generated file to clean target
 clean_template::
-	rm -f $(O)@!props["outFilename"]!@
+	rm -f $(O)@!templ["outFilename"]!@
 
 <!--(end)-->
 

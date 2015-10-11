@@ -1,0 +1,12 @@
+#ident: "test"
+#somelist:
+#    - "first"
+#    - "second"
+type:   map
+mapping:
+  "ident":
+    type: str
+  "somelist":
+    type: seq
+    sequence:
+      - type: str

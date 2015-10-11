@@ -1,0 +1,31 @@
+# ruby based "kwalify" schema
+#
+# see http://www.kuwata-lab.com/kwalify/ruby/users-guide.01.html
+type:   map
+mapping:
+  "databaseSchema":
+    type: str
+  "templateSetName":
+    type: str
+    required: yes
+  "extraMakefileIncludes":
+     type: seq
+     sequence:
+       - type: str
+  "templates":
+     type: seq
+     required: yes
+     sequence:
+       - type: map
+         mapping:
+           "name":
+              type: str
+              required: yes
+           "templateFilename":
+              type: str
+              required: yes
+           "outFilename":
+              type: str
+              required: yes
+           "extraVariable":
+              type: str

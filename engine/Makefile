@@ -1,5 +1,3 @@
-# sudo apt-get install python-yaml wget
-
 # set these from outside
 ifndef T
     $(error set directory of templates to T)
@@ -17,21 +15,51 @@ endif
 TEMPL_DB=$(T)template.yaml
 PYRATEMP=python $(PYRATOOL)
 mkfile_path := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+TEMPL_SCH=$(mkfile_path)template.yaml.schema
 
 ifeq ("$(wildcard $(TEMPL_DB))","")
     $(error no 'template.yaml' found in '$(T)')
 endif
 
-# problematic: if there is an syntax error in the generated Makefile.in,
-# the file has to be deleted manually... also a problem: when this file
-# is empty it will not be regenerated and nothing happens
+# declare the self-verification before including the generated Makefile.
+# this way we perform these steps before trying to optional validate the
+# provided user datadase itself.
+
+# validate the schema for the "template.yaml" templateSet description
+#
+# great, return value isl always zero... directly piping to grep will
+# hide the error message... so output into "out" file, grep separatly to
+# check. output the error or provide target of recipe.
+$(O)template.verified: $(TEMPL_DB) $(TEMPL_SCH) | $(O)
+	kwalify -lf $(TEMPL_SCH) $(TEMPL_DB) > $@.out
+	@grep "$<#0: valid" $@.out >/dev/null \
+	    || (cat $@.out && rm -f $@ && false) \
+	    && (mv $@.out $@)
+
+# validate the schema itself. i don't think this has to be done often. but it can't hurt either ;-)
+$(O)meta.verified: $(TEMPL_SCH) | $(O)
+	kwalify -lm $< > $@.out
+	@grep "$<#0: valid" $@.out >/dev/null \
+	    || (cat $@.out && rm -f $@ && false) \
+	    && (mv $@.out $@)
+
+# this is used to collect "validation" steps on the way
+validate:: $(O)meta.verified $(O)template.verified
+
+# Note: if there is an syntax error in the generated Makefile.in, the
+# file has to be deleted manually... also a problem: when this file is
+# empty it will not be regenerated and nothing happens
 -include $(O)Makefile.inc
 
 all: generate
 
+# self-documenting ,-)
+sysdeps:
+	sudo apt-get install python-yaml wget kwalify
+
 # printing the info after all inclusions are done
 info::
-	@echo "info: main-makefile:"
+	@echo "info from main-makefile:"
 	@echo "this makefile folder: '$(mkfile_path)'"
 	@echo "template folder: '$(T)'"
 	@echo "output folder: '$(O)'"
@@ -54,8 +82,7 @@ $(O)Makefile.inc: $(mkfile_path)Makefile.inc.template $(TEMPL_DB) | $(O)
 clean: clean_template
 	rm -f $(O)Makefile.inc
 
-# status printing
-clean_template::
-	@echo "clean_template done!"
-generate::
+# this is the collection of the main-task: first validate everything,
+# then generate the templates.
+generate: validate generate_template
 	@echo "generate done!"
