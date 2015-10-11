@@ -33,8 +33,8 @@ $(O)database.verified: $(DB) $(T)@!databaseSchema!@ | $(O)
 # chain also to the "validate" target which is used by the main-makefile
 # to validate the template itself
 validate:: $(O)database.verified
-# attach to clean rule:
-clean_template::
+# attach to the "clean temporary state" rule:
+clean_state::
 	rm -f $(O)database.verified
 
 <!--(else)-->
@@ -50,7 +50,7 @@ clean_template::
 # $(O)@!templ["outFilename"]!@
 $(O)@!templ["outFilename"]!@ @!templ["name"]!@: $(T)@!templ["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
 	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
-	$(PYRATEMP)  -f $(DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || rm $(O)@!templ["outFilename"]!@
+	$(PYRATEMP)  -f $(DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $(O)@!templ["outFilename"]!@ && false)
 
 # attach ourself to the "generate" meta target
 generate_template:: $(O)@!templ["outFilename"]!@

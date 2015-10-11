@@ -32,10 +32,10 @@ endif
 all: generate
 
 # declare some self-verification before including the generated Makefile.
-# this way we perform these steps before trying to optional validate the
+# this way we perform these steps before trying to optional verify the
 # provided user database itself.
 
-# validate the schema for the "template.yaml" templateSet description
+# verify the schema for the "template.yaml" templateSet description
 #
 # great, the return value of kwalify is always zero... directly piping to
 # grep will hide the error message... so output into "out" file, grep
@@ -46,7 +46,7 @@ $(O)template.verified: $(T_DB) $(T_SCH) | $(O)
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
 
-# validate the schema itself. i don't think this has to be done often. but it can't hurt either ;-)
+# verify the schema itself. i don't think this has to be done often. but it can't hurt either ;-)
 $(O)meta.verified: $(T_SCH) | $(O)
 	kwalify -lm $< > $@.out
 	@grep "$<#0: valid" $@.out >/dev/null \
@@ -55,7 +55,7 @@ $(O)meta.verified: $(T_SCH) | $(O)
 
 # this is used to collect the various "validation" steps. the generated
 # Makefile.inc might attach here.
-validate:: $(O)meta.verified $(O)template.verified
+verify:: $(O)meta.verified $(O)template.verified
 
 # Note: if there is an syntax error in the generated Makefile.in, the
 # file has to be deleted manually... also a problem: when this file is
@@ -87,14 +87,18 @@ $(O):
 
 # the templates own bootstrap rule:
 $(O)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O)
-	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || rm $@
+	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || (rm $@ && false)
 
 # diligent cleaning
-clean: clean_template
+clean: clean_state clean_template
+
+# this target does just delete the temporary files created by the
+# template-engine itself.
+clean_state::
 	rm -f $(O)Makefile.inc
 	rm -f $(O)meta.verified $(O)template.verified
 
-# this is the collection of the main-task: first validate everything,
+# this is the collection of the main-task: first verify everything,
 # then generate the templates.
-generate: validate generate_template
+generate: verify generate_template
 	@echo "generate done!"
