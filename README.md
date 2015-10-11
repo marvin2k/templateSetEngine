@@ -21,8 +21,8 @@ leverage a strong model/view separation and looks simple enough.
 ## Idea
 
 The whole 'tool' is actually a just Makefile which looks for the
-`$(T)/template.yaml` to bootstrap. It uses the very same template engine to
-create an additional `$(T)Makefile.inc` which then controls the single calls for
+`$(T)template.yaml` to bootstrap. It uses the very same template engine to
+create an additional `$(O)Makefile.inc` which then controls the single calls for
 each individual file of the templateSet.
 
 Pro:
@@ -31,7 +31,7 @@ Pro:
   coded in the targets of the Makefiles
 
 Contra:
-- Some generated files like `$(T)Makefile.inc` are used to keep state and litter
+- Some generated files like `$(O)Makefile.inc` are used to keep state and litter
   the output folder.
 - The syntax of Makefiles is sometimes not very straight-forward. Well, it is
   used to solve a complex problem.
@@ -39,7 +39,7 @@ Contra:
 ## Design
 
 Uses the template engine [pyratemp][1] and the description of the templateSet to
-generate the `$(T)Makefile.inc` which controls the template-generation process.
+generate the `$(O)Makefile.inc` which controls the template-generation process.
 This file is included into the main-makefile together with a target to create
 it. The file is not there initially, `make` recognises the target to create the
 file, executes it reevaluates everything to incorporate the added targets.
@@ -62,18 +62,18 @@ The tool uses [kwalify][2] to verify the `$(T)template.yaml` of a templateSet
 and optionally the user-provided database. To mark successfull verification, the
 following files are created:
 
-- `$(O)meta.success`: The description of the tools schema file for the
+- `$(O)meta.verified`: The description of the tools schema file for the
   `$(T)template.yaml` is correct. This step prevent the developer of the tool from making
 mistakes.
-- `$(O)template.success`: The `$(T)template.yaml` of the templateSet is
+- `$(O)template.verified`: The `$(T)template.yaml` of the templateSet is
   correct. This prevents the developer of the templateSet from making mistakes.
-- `$(O)database.success`: Optional step. Denotes that the last database used was alright 
+- `$(O)database.verified`: Optional step. Denotes that the last database used was alright 
   according to the given schema file defined in `$(T)template.yaml`. This
 prevents users of the templateSet from making mistakes.
 
 Since the `kwalify` tool will return 0 even on failure (!) some hidden shell trickery has to be performed.
 
-## Calling
+## Wrapper script
 
 Options to underlying `make` can be passed as command line options. See wrapper script `engine/engine.py`. Call for example:
 
