@@ -77,7 +77,8 @@ info::
 	@echo "database: '$(DB)'"
 	@echo "pyratemp: '$(PYRATOOL)'"
 
-# for the time beeing: obtain the tool if it is not there
+# for the time beeing: obtain the tool if it is not there. this is
+# silently broken... manually downloading it is strongly advised.
 pyratemp-0.3.2:
 	wget -qO- http://www.simple-is-better.org/template/pyratemp-0.3.2.tgz | tar xvz
 

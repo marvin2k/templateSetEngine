@@ -107,6 +107,7 @@ cd -
   alive.
 - careful, the example template uses the "XML_DB" hack to demonstrate internal
   database conversion, like xml2yaml... this feature is not tought-out...
+- the shipping of pyratemp is a problem...
 
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify
