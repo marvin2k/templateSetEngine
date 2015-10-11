@@ -101,5 +101,13 @@ make
 cd -
 ```
 
+# next steps
+
+- Might wanna move to [Rx][3] as schema language? Project does look more
+  alive.
+- Pythons [argparse][4] looks good enough for a wrapper script.
+
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify
+[3]: http://rx.codesimply.com/index.html
+[4]: https://docs.python.org/2/library/argparse.html
