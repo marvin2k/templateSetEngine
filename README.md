@@ -4,8 +4,9 @@ Solves the problem of configuring a set of template files according to an
 external database. Therefore it uses a simple python based template engine to
 process the individual files.
 
-The templateSet itself is located in the directory pointed to by `$(T)` and the
-resulting files will be put into `$(O)`. The engine is located in `$(E)`.
+The templateSet itself is located in the directory pointed to by `$(T)`, the
+database used to fill them is in `$(DB)` and the resulting files will be put
+into `$(O)`. The engine is located in `$(E)`.
 
 ## Collection of files: the 'templateSet'
 
@@ -46,7 +47,8 @@ file, executes it reevaluates everything to incorporate the added targets.
 Someone can then execute the `generate` target to call the template engine and
 whatever `make` thinks it has to call to perform the whole generation. After the
 initial bootstrap only the relevant commands are re-executed according to the
-rules in the Makefiles.
+rules in the Makefiles. To remove all temporary files call the
+`clean_state` target.
 
 A templateSet can optionally chain its own `$(T)Makefile.add` into the
 generation process to allow additional transformation steps.
@@ -73,21 +75,19 @@ Since the `kwalify` tool will return 0 even on failure (!) some hidden shell tri
 
 ## Calling
 
-Options can be passed to `make` as command line options. See early wrapper script `engine/engine.sh`. Call for example:
+Options to underlying `make` can be passed as command line options. See wrapper script `engine/engine.py`. Call for example:
 
 ```bash
-$ ./engine/engine.sh info
+$ ./engine/engine.py -h
 ```
 
-And then to generate the actual files of the example templateSet in this
-repository:
+Note that unkown options are passed on to `make`, especially useful for
+debugging. To generate the actual files of the example templateSet in this
+repository using 4 processes in parallel:
 
 ```bash
-$ ./engine/engine.sh generate
+$ ./engine/engine.py -DB templates/bla.yaml -T templates -O outdir generate -j4
 ```
-
-Note: The script is just a proof of concept. Some scripting language should be
-used to provide proper command line argument handling.
 
 Note: If the `$(O)Makefile.inc` has syntax errors the tool will stop working as
 make cannot recover from parsing errors. This could be fixed in the
@@ -98,10 +98,11 @@ wrapper-script.
 Contains a simple cmake project. The generated files can then be used:
 
 ```bash
-mkdir ./testbf/build
-cd ./testbf/build
+mkdir outdir/build
+cd outdir/build
 cmake ..
 make
+...
 cd -
 ```
 
