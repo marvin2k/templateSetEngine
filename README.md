@@ -4,39 +4,45 @@ Solves the problem of configuring a set of template files according to an
 external database. Therefore it uses a simple python based template engine to
 process the individual files.
 
-The templateSet itself is located in the directory pointed to by `$(T)` and the resulting files will be put into `$(O)`.
+The templateSet itself is located in the directory pointed to by `$(T)` and the
+resulting files will be put into `$(O)`. The engine is located in `$(E)`.
 
 ## Collection of files: the 'templateSet'
 
 Set of files resident in the `$(T)` folder. They form a collection of files
-together with a $(T)template.yaml` describing what files have to be processes.
+together with a `$(T)template.yaml` describing what files have to be processes.
 See `engine/template.yaml.schema` what is allowed.
 
 Each templateSet is suitable for one type of input database understood by
 [pyratemp][1] (which is yaml or json). Pyratemp was choosen because it tries to
-leverage a strong model/view separation.
+leverage a strong model/view separation and looks simple enough.
 
 ## Idea
 
-The whole 'tool' is a just Makefile which looks for the `$(T)/template.yaml` to bootstrap. It uses the very same template engine to create an additional `$(T)Makefile.inc` which then controls the single calls for each individual file of the templateSet.
+The whole 'tool' is actually a just Makefile which looks for the
+`$(T)/template.yaml` to bootstrap. It uses the very same template engine to
+create an additional `$(T)Makefile.inc` which then controls the single calls for
+each individual file of the templateSet.
 
 Pro:
 - Possible automatic parallelization via `-j`
 - `make` can check the "model" of the template-generation itself, which is
-  coded via the Makefiles
+  coded in the targets of the Makefiles
 
 Contra:
-- Some generated files like `$(T)Makefile.inc` are used to keep state and litter the target folder
+- Some generated files like `$(T)Makefile.inc` are used to keep state and litter
+  the output folder.
+- The syntax of Makefiles is sometimes not very straight-forward. Well, it is
+  used to solve a complex problem.
 
 ## Design
 
 Uses the template engine [pyratemp][1] and the description of the templateSet to
-generate the `$(T)Makefile.inc` describing the template-generation process. Someone
-can then execute the `generate` target to call the template engine and whatever
-`make` thinks it has to call to perform the whole generation.
-
-After the initial bootstrap only the relevant commands are re-executed
-according to the rules in the Makefiles.
+generate the `$(T)Makefile.inc` to control the template-generation process.
+Someone can then execute the `generate` target to call the template engine and
+whatever `make` thinks it has to call to perform the whole generation. After the
+initial bootstrap only the relevant commands are re-executed according to the
+rules in the Makefiles.
 
 A templateSet can optionally chain its own `$(T)Makefile.add` into the
 generation process to allow additional transformation steps.
