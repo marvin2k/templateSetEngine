@@ -105,7 +105,8 @@ cd -
 
 - Might wanna move to [Rx][3] as schema language? Project does look more
   alive.
-- Pythons [argparse][4] looks good enough for a wrapper script.
+- careful, the example template uses the "XML_DB" hack to demonstrate internal
+  database conversion, like xml2yaml... this feature is not tought-out...
 
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify
