@@ -5,21 +5,17 @@ endif
 ifndef O
     $(error set output directory of templateSet to O)
 endif
-ifndef PYRATOOL
-    $(error set location of pyratool to PYRATOOL)
+ifndef DB
+    $(error set location of database to DB)
 endif
-# not checking DB to allows automatic conversion makefiles to set the
-# value later
-#ifndef DB
-#    $(error set location of database to DB)
-#endif
 
 # some variables:
 T_DB=$(T)template.yaml
-# how to call the tool we actually rely on
-PYRATEMP=python $(PYRATOOL)
 # "$(E)" contains the location of the engine itself
 E:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# how to call the tool we actually rely on
+PYRATOOL=$(E)pyratemp-0.3.2/pyratemp_tool.py
+PYRATEMP=python $(PYRATOOL)
 # the schema of the 'template.yaml' description
 T_SCH=$(E)template.yaml.schema
 
@@ -30,6 +26,10 @@ endif
 
 # if we do not know what to do then just start to work
 all: generate
+
+# self-documenting ,-)
+sysdeps:
+	sudo apt-get install python-yaml wget kwalify
 
 # declare some self-verification before including the generated Makefile.
 # this way we perform these steps before trying to optional verify the
@@ -62,10 +62,6 @@ verify:: $(O)meta.verified $(O)template.verified
 # empty it will not be regenerated and nothing happens
 -include $(O)Makefile.inc
 
-# self-documenting ,-)
-sysdeps:
-	sudo apt-get install python-yaml wget kwalify
-
 # printing the info after all inclusions are done
 info::
 	@echo "info from main-makefile:"
@@ -79,15 +75,18 @@ info::
 
 # for the time beeing: obtain the tool if it is not there. this is
 # silently broken... manually downloading it is strongly advised.
-pyratemp-0.3.2:
-	wget -qO- http://www.simple-is-better.org/template/pyratemp-0.3.2.tgz | tar xvz
+$(E)pyratemp-0.3.2/pyratemp_tool.py:
+	wget -qO- http://www.simple-is-better.org/template/pyratemp-0.3.2.tgz \
+	    | tar xvz --directory $(E)
+
+pyratemp: $(E)pyratemp-0.3.2/pyratemp_tool.py
 
 # create output directory
 $(O):
 	mkdir --parent $@
 
 # the templates own bootstrap rule:
-$(O)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O)
+$(O)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O) pyratemp
 	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || (rm $@ && false)
 
 # diligent cleaning

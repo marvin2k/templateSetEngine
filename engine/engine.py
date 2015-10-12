@@ -23,7 +23,7 @@ parser.add_argument(
         )
 parser.add_argument(
         "target",
-        choices=['info', 'verify', 'generate', 'clean_state', 'clean'],
+        choices=['info', 'sysdeps', 'verify', 'generate', 'clean_state', 'clean'],
         default='generate',
         nargs="*",
         help='perform this list of targets of the Makefile. default target: \'%(default)s\''
@@ -42,11 +42,6 @@ parser.add_argument(
         '-T', '--templateSet',
         required=True,
         help='templateSet to use'
-        )
-parser.add_argument(
-        '-P', '--pyratool',
-        default=thisScriptsPath+"/pyratemp-0.3.2/pyratemp_tool.py",
-        help='location of pyratemp. default: \'%(default)s\''
         )
 # parse it. parse our options as good as it can and puts all the rest
 # into the "remainder", to be passed to make
@@ -70,10 +65,8 @@ if not templateSet.endswith("/"):
 outdir = "O=" + args.outdir
 if not outdir.endswith("/"):
     outdir += "/"
-# the tool...
-pyratool="PYRATOOL="+args.pyratool
 # and precious: the database
-database="XML_DB="+args.database
+database="DB="+args.database
 
 # and finally calling make! could add more code for error recovery, deleting a wrong $(O)Makefile.inc for example
-subprocess.call(["make", "-f", mainMakefile, pyratool, outdir, templateSet, database]+args.target+remainder)
+subprocess.call(["make", "-f", mainMakefile, outdir, templateSet, database]+args.target+remainder)
