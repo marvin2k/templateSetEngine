@@ -28,7 +28,7 @@ endif
 all: generate
 
 # self-documenting ,-)
-sysdeps:
+sysdeps::
 	sudo apt-get install python-yaml wget kwalify
 
 # declare some self-verification before including the generated Makefile.
