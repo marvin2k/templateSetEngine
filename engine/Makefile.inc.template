@@ -42,7 +42,7 @@ $(O)database.verified: $(DB) $(T)@!databaseSchema!@ | $(O)
 
 # chain also to the "validate" target which is used by the main-makefile
 # to validate the template itself
-validate:: $(O)database.verified
+verify:: $(O)database.verified
 # attach to the "clean temporary state" rule:
 clean_state::
 	rm -f $(O)database.verified
