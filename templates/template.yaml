@@ -10,19 +10,21 @@
 databaseSchema: "database.yaml.schema"
 # not sure if this name is really needed...
 templateSetName: "someName"
-    # plugin for your custom additional tasks. maybe database conversion or
-    # verification? could also plugin generated makefiles from this very
-    # template-set.
-extraMakefileIncludes:
+# plugin for your custom additional tasks, searched for in $(T). maybe database
+# conversion or verification? can also use "generatedMakefileIncludes",
+# searched in $(O), for files created from this very template-set.
+staticMakefileIncludes:
     - "Makefile.yamlFromScratch"
     - "Makefile.extraInfo"
 
 templates:
-    # the keys are also targets in the generated makefile
-    - name: "cpp"
-        # this file is searched for in $(T)
+    # a list, where the "name" is optional and will be used as additional target
+    # name, allowing explicit direct calling of this rule from outside. take
+    # care to use sensefull names!
+    -
+      # this file is searched for in $(T)
       templateFilename: "test.cpp.template"
-        # and this put relative to $(O)
+      # and this put relative to $(O)
       outFilename: "test.cpp"
     - name: "somefile"
       templateFilename: "some.file.template"

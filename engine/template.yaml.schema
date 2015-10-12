@@ -8,7 +8,14 @@ mapping:
   "templateSetName":
     type: str
     required: yes
-  "extraMakefileIncludes":
+  # are included from "$(T)"
+  "staticMakefileIncludes":
+     type: seq
+     sequence:
+       - type: str
+  # are included from "$(O)" and the include is prepended with a "-" to hide
+  # errors (due to "not-there-yet", during ongoing bootstrap) in parsing
+  "generatedMakefileIncludes":
      type: seq
      sequence:
        - type: str
@@ -18,9 +25,10 @@ mapping:
      sequence:
        - type: map
          mapping:
+           # will be used as additional "target" string to allow calling this
+           # rules directly from outside
            "name":
               type: str
-              required: yes
            "templateFilename":
               type: str
               required: yes

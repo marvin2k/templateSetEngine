@@ -11,13 +11,23 @@ none
 #
 # the set name is "@!templateSetName!@
 #
-# NOTE: the variable $(T) will hold the actual folder of the template at
-# runtime. other variables: $(DB) $(O)
+# NOTE: available variables are
+# - $(T) will hold the actual folder of the template at runtime
+# - $(DB) is the database
+# - $(O) is the output folder
+# - $(E) is the folder where the main-makefile resides
 
-<!--(if exists("extraMakefileIncludes"))-->
-# additional handwritten makefile includes:
-    <!--(for inc in extraMakefileIncludes)-->
+<!--(if exists("staticMakefileIncludes"))-->
+# template set consists of @!len(staticMakefileIncludes)!@ additional static makefiles:
+    <!--(for inc in staticMakefileIncludes)-->
 include $(T)@!inc!@
+    <!--(end)-->
+<!--(end)-->
+
+<!--(if exists("generatedMakefileIncludes"))-->
+# and @!len(generatedMakefileIncludes)!@ generated makefiles:
+    <!--(for inc in generatedMakefileIncludes)-->
+-include $(O)@!inc!@
     <!--(end)-->
 <!--(end)-->
 
@@ -46,9 +56,8 @@ clean_state::
 #
 
 <!--(for templ in templates)-->
-# output filename of name '@!templ["name"]!@' to be written into
-# $(O)@!templ["outFilename"]!@
-$(O)@!templ["outFilename"]!@ @!templ["name"]!@: $(T)@!templ["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+# output rule for $(O)@!templ["outFilename"]!@
+$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T)@!templ["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
 	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
 	$(PYRATEMP)  -f $(DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $(O)@!templ["outFilename"]!@ && false)
 
