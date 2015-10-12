@@ -69,6 +69,18 @@ clean_template::
 
 <!--(end)-->
 
+<!--(if exists("copies"))-->
+    <!--(for c in copies)-->
+$(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T)@!c["originalFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+	cp $< $@
+
+generate_template:: $(O)@!c["outFilename"]!@
+clean_template::
+	rm -f $(O)@!c["outFilename"]!@
+
+    <!--(end)-->
+<!--(end)-->
+
 # printing info
 info::
 	@echo "info: generated '$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))'"

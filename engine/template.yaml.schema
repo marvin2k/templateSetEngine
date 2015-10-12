@@ -3,8 +3,10 @@
 # see http://www.kuwata-lab.com/kwalify/ruby/users-guide.01.html
 type:   map
 mapping:
+  # if given the schema will be used to verify the user-provided database
   "databaseSchema":
     type: str
+  # not sure if this property will stay...
   "templateSetName":
     type: str
     required: yes
@@ -19,6 +21,8 @@ mapping:
      type: seq
      sequence:
        - type: str
+  # templates are files suitable to be processes by pyratemp using the provided
+  # database $(DB)
   "templates":
      type: seq
      required: yes
@@ -37,3 +41,20 @@ mapping:
               required: yes
            "extraVariable":
               type: str
+  # "copies" are files copied verbatim from the template-folder into some place
+  # inside the output folder
+  "copies":
+     type: seq
+     sequence:
+       - type: map
+         mapping:
+           # will be used as additional "target" string to allow calling this
+           # rules directly from outside
+           "name":
+              type: str
+           "originalFilename":
+              type: str
+              required: yes
+           "outFilename":
+              type: str
+              required: yes
