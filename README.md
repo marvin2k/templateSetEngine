@@ -120,6 +120,10 @@ cd -
   subdirectory handling could be complicated... globbing additional makefiles
   should be easy... otherwise hiding makefile-syntax behind a simple yaml file
   sounds like a good idea...
+- research on how to use this stuff to add c++ code to existing project.
+  problem: cmake cannot re-execute itself after initial configuration (make
+  can). so: have an including CMakeLists.txt with an "ExternalProject()"
+  referencing a makefile based mini-lib. there, some CMakeLists is generated
 
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify
