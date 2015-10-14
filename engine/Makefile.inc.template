@@ -4,7 +4,7 @@ none
 # automatically generated to use make for dependency resolution of
 # template generation. do not edit.
 #
-# generated from template dscription in:
+# generated from template description in:
 # @!templateDatabase!@
 #
 # generated at: @!date!@
@@ -13,7 +13,7 @@ none
 #
 # NOTE: available variables are
 # - $(T) will hold the actual folder of the template at runtime
-# - $(DB) is the database
+# - $(INTERNAL_DB) is the database
 # - $(O) is the output folder
 # - $(E) is the folder where the main-makefile resides
 
@@ -31,14 +31,11 @@ include $(T)@!inc!@
     <!--(end)-->
 <!--(end)-->
 
-<!--(if exists("databaseSchema"))-->
+<!--(if exists("xsdSchema"))-->
 # validation of optional schema file, using "kwalify". doing shell
 # trickery to fix always-return-0 from kwalify
-$(O)database.verified: $(DB) $(T)@!databaseSchema!@ | $(O)
-	kwalify -lf $(T)@!databaseSchema!@ $(DB) > $@.out
-	@grep "$<#0: valid" $@.out >/dev/null \
-	    || (cat $@.out && rm -f $@ && false) \
-	    && (mv $@.out $@)
+$(O)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O)
+	xmllint --noout --schema $(T)@!xsdSchema!@ $(DB) && touch $@
 
 # chain also to the "validate" target which is used by the main-makefile
 # to validate the template itself
@@ -57,9 +54,9 @@ clean_state::
 
 <!--(for templ in templates)-->
 # output rule for $(O)@!templ["outFilename"]!@
-$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T)@!templ["templateFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T)@!templ["templateFilename"]!@ $(INTERNAL_DB) $(O)Makefile.inc | $(O)
 	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
-	$(PYRATEMP)  -f $(DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $(O)@!templ["outFilename"]!@ && false)
+	$(PYRATEMP)  -f $(INTERNAL_DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $@ && false)
 
 # attach ourself to the "generate" meta target
 generate_template:: $(O)@!templ["outFilename"]!@
@@ -71,7 +68,7 @@ clean_template::
 
 <!--(if exists("copies"))-->
     <!--(for c in copies)-->
-$(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T)@!c["originalFilename"]!@ $(DB) $(O)Makefile.inc | $(O)
+$(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T)@!c["originalFilename"]!@ $(INTERNAL_DB) $(O)Makefile.inc | $(O)
 	cp $< $@
 
 generate_template:: $(O)@!c["outFilename"]!@

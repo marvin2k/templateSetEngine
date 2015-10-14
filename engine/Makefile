@@ -8,20 +8,26 @@ endif
 ifndef DB
     $(error set location of database to DB)
 endif
+# check this:
+ifdef INTERNAL_DB
+    $(error _not_ set INTERNAL_DB!)
+endif
 
 # some variables:
-T_DB=$(T)template.yaml
-# "$(E)" contains the location of the engine itself
+#
+# the location of the engine itself. needs to use immidiate expansion!
 E:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 # how to call the tool we actually rely on
 PYRATOOL=$(E)pyratemp-0.3.2/pyratemp_tool.py
 PYRATEMP=python $(PYRATOOL)
-# the schema of the 'template.yaml' description
+# the database describing the templateSet
+T_DB=$(T)template.yaml
+# the schema of the 'template.yaml' description is part of the tool
 T_SCH=$(E)template.yaml.schema
 
 # checking file existence
 ifeq ("$(wildcard $(T_DB))","")
-    $(error no 'template.yaml' found in template folder '$(T)')
+    $(error no templateSet description 'template.yaml' found in template folder '$(T)')
 endif
 
 # if we do not know what to do then just start to work
@@ -31,11 +37,33 @@ all: generate
 sysdeps::
 	sudo apt-get install python-yaml wget kwalify
 
+# this... is... getting.. fucking... complicated...
+ifeq (.xml,$(suffix $(DB)))
+    $(warning xml)
+    else ifeq (.yaml,$(suffix $(DB)))
+    $(warning yaml)
+else
+    $(warning the suffix '$(suffix $(DB))' for $(DB) is unkown?)
+endif
+
+$(O)database.yaml: $(DB)
+	perl $(E)xml2yaml.pl $< > $@
+
+INTERNAL_DB=$(O)database.yaml
+
+generate_template:: $(INTERNAL_DB)
+
 # declare some self-verification before including the generated Makefile.
 # this way we perform these steps before trying to optional verify the
 # provided user database itself.
+#
+# TODO: switch to xml... throw out kwalify
 
 # verify the schema for the "template.yaml" templateSet description
+#
+# TODO: this is broken... if the "template.yaml" is not correct, the
+# "Makefile.inc" cannot be generated and the "template.yaml" can never be
+# verfied... more this kwalify call into the engine.py!
 #
 # great, the return value of kwalify is always zero... directly piping to
 # grep will hide the error message... so output into "out" file, grep
@@ -86,6 +114,9 @@ $(O):
 	mkdir --parent $@
 
 # the templates own bootstrap rule:
+#
+# TODO: add all variables into generated model, use them instead of the
+# variables for more safety. then maybe make the generated makefiles .PHONY?
 $(O)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O) pyratemp
 	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || (rm $@ && false)
 

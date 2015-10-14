@@ -4,7 +4,7 @@
 type:   map
 mapping:
   # if given the schema will be used to verify the user-provided database
-  "databaseSchema":
+  "xsdSchema":
     type: str
   # not sure if this property will stay...
   "templateSetName":

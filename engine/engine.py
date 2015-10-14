@@ -69,4 +69,6 @@ if not outdir.endswith("/"):
 database="DB="+args.database
 
 # and finally calling make! could add more code for error recovery, deleting a wrong $(O)Makefile.inc for example
-subprocess.call(["make", "-f", mainMakefile, outdir, templateSet, database]+args.target+remainder)
+retval = subprocess.call(["make", "-f", mainMakefile, outdir, templateSet, database]+args.target+remainder)
+
+sys.exit(retval)
