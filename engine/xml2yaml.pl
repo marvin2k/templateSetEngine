@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # original source see: https://github.com/ktrask/xml2yaml
 
