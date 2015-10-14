@@ -13,9 +13,9 @@ none
 #
 # NOTE: available variables are
 # - $(T) will hold the actual folder of the template at runtime
-# - $(INTERNAL_DB) is the database
 # - $(O) is the output folder
-# - $(E) is the folder where the main-makefile resides
+# - $(INTERNAL_DB) is the real intput-database after it was optionall converted
+#   into yaml by the main-makefile
 
 <!--(if exists("staticMakefileIncludes"))-->
 # template set consists of @!len(staticMakefileIncludes)!@ additional static makefiles:
@@ -32,8 +32,7 @@ include $(T)@!inc!@
 <!--(end)-->
 
 <!--(if exists("xsdSchema"))-->
-# validation of optional schema file, using "kwalify". doing shell
-# trickery to fix always-return-0 from kwalify
+# validation of optional schema file
 $(O)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O)
 	xmllint --noout --schema $(T)@!xsdSchema!@ $(DB) && touch $@
 

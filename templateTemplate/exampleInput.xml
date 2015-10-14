@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<database
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="database.xsd"
+    >
+
+    <template header="Stub" />
+
+</database>

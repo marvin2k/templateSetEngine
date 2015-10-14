@@ -1,0 +1,22 @@
+---
+xsdSchema: "database.xsd"
+# not sure if this name is really needed...
+templateSetName: "templateTemplate"
+
+templates:
+    - templateFilename: "template.yaml.template"
+      outFilename: "template.yaml"
+    - templateFilename: "database.xsd.template"
+      outFilename: "database.xsd"
+    - templateFilename: "README.md.template"
+      outFilename: "README.md"
+copies:
+    - originalFilename: "exampleInput.xml"
+      outFilename: "exampleInput.xml"
+    - originalFilename: "some.file.template"
+      outFilename: "some.file.template"
+      # will not automatically include this (empty) makefile stub. but it shows
+      # a way how to add steps into the generation process:
+    # - originalFilename: "Makefile.sysdeps"
+    #   outFilename: "Makefile.sysdeps"
+...

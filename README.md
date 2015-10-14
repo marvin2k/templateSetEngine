@@ -95,18 +95,25 @@ Note: If the `$(O)Makefile.inc` has syntax errors the tool will stop working as
 make cannot recover from parsing errors. This could be fixed in the
 wrapper-script.
 
-## Example templateSet
+## Creating new templateSet
 
-Contains a simple CMake project. The generated files can then be used:
+At first clone this project into a local directory. Then use the
+templateSetEngine to create a new template from the stock-templateTemplate:
 
 ```bash
-mkdir outdir/build
-cd outdir/build
-cmake ..
-make
-...
-cd -
+mkdir work && cd work
+git clone https://github.com/marvin2k/templateSetEngine
+./templateSetEngine/engine/engine.py -T templateSetEngine/templateTemplate -O newTemplate -DB templateSetEngine/templateTemplate/exampleInput.xml generate clean_state
 ```
+
+Now you can edit the files in `newTemplate`, or use the engine on the new template:
+
+```bash
+./templateSetEngine/engine/engine.py -T newTemplate -O output -DB newTemplate/exampleInput.xml generate clean_state
+```
+
+In `output` is the new generated instance. Careful to not wrap your head
+accidentally around the wrong thing...
 
 # next steps
 

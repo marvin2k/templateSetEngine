@@ -1,0 +1,21 @@
+<!--(set_escape)-->
+    none
+<!--(end)-->
+---
+# convention to call the schema to control the input database like this:
+xsdSchema: "database.xsd"
+templateSetName: "@!template[0]['header']!@"
+
+# this is a mechanism to include additional targets
+#staticMakefileIncludes:
+#    - "Makefile.sysdeps"
+# you can also generate makefile and include _them_ into the template
+# generation process:
+#generatedMakefileIncludes:
+#    - "Makefile.generated"
+
+# empty stub as well
+templates:
+    - templateFilename: "some.file.template"
+      outFilename: "some.file"
+...

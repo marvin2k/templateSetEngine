@@ -1,7 +1,0 @@
-# this is just a test input database
----
-ident: "test"
-somelist:
-    - "first"
-    - "second"
-...

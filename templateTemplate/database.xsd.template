@@ -1,0 +1,18 @@
+<!--(set_escape)-->
+    html
+<!--(end)-->
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<!-- this is a stub, allowing anythin'... -->
+
+  <xsd:element name="database">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:anyAttribute processContents="skip"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

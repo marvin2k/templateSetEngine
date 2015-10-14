@@ -31,7 +31,7 @@ ifeq ("$(wildcard $(T_DB))","")
 endif
 
 # if we do not know what to do then just start to work
-all: generate
+all: verify generate
 
 # self-documenting ,-)
 sysdeps::
@@ -40,15 +40,20 @@ sysdeps::
 
 # this... is... getting.. fucking... complicated...
 ifeq (.xml,$(suffix $(DB)))
-    $(warning xml)
-    else ifeq (.yaml,$(suffix $(DB)))
-    $(warning yaml)
+
+$(O)database.yaml: $(DB)
+	perl $(E)xml2yaml.pl $< > $@
+
+else ifeq (.yaml,$(suffix $(DB)))
+
+$(O)database.yaml: $(DB)
+	cp $< $@
 else
     $(warning the suffix '$(suffix $(DB))' for $(DB) is unkown?)
 endif
 
-$(O)database.yaml: $(DB)
-	perl $(E)xml2yaml.pl $< > $@
+clean_state::
+	rm -f $(INTERNAL_DB)
 
 INTERNAL_DB=$(O)database.yaml
 
