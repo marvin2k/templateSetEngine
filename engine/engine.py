@@ -13,7 +13,7 @@ VERSION = 0.1
 thisScriptsPath = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser(
-        description='templateSetEngine -- apply database to template',
+        description='templateSetEngine -- apply database to templateSet',
         epilog='additional arguments are passed to make'
         )
 parser.add_argument(
