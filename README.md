@@ -103,7 +103,12 @@ templateSetEngine to create a new template from the stock-templateTemplate:
 ```bash
 mkdir work && cd work
 git clone https://github.com/marvin2k/templateSetEngine
-./templateSetEngine/engine/engine.py -T templateSetEngine/templateTemplate -O newTemplate -DB templateSetEngine/templateTemplate/exampleInput.xml generate clean_state
+# install system dependencies, once:
+./templateSetEngine/engine/engine.py -T templateSetEngine/templateTemplate -O newTemplate -DB templateSetEngine/templateTemplate/exampleInput.xml sysdeps
+# then do the generation:
+./templateSetEngine/engine/engine.py -T templateSetEngine/templateTemplate -O newTemplate -DB templateSetEngine/templateTemplate/exampleInput.xml generate
+# and cleanup temporary files
+./templateSetEngine/engine/engine.py -T templateSetEngine/templateTemplate -O newTemplate -DB templateSetEngine/templateTemplate/exampleInput.xml clean_state
 ```
 
 Now you can edit the files in `newTemplate`, or use the engine on the new template:
