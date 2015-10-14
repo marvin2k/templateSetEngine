@@ -35,7 +35,8 @@ all: generate
 
 # self-documenting ,-)
 sysdeps::
-	sudo apt-get install python-yaml wget kwalify
+	sudo apt-get install python-yaml wget libyaml-syck-perl libxml-simple-perl
+
 
 # this... is... getting.. fucking... complicated...
 ifeq (.xml,$(suffix $(DB)))
