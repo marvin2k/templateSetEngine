@@ -35,7 +35,7 @@ all: generate
 
 # self-documenting ,-)
 sysdeps::
-	sudo apt-get install python-yaml wget libyaml-syck-perl libxml-simple-perl
+	sudo apt-get install python-yaml wget libyaml-syck-perl libxml-simple-perl kwalify
 
 
 # this... is... getting.. fucking... complicated...
