@@ -4,7 +4,7 @@
 ---
 # convention to call the schema to control the input database like this:
 xsdSchema: "database.xsd"
-templateSetName: "@!template[0]['header']!@"
+templateSetName: "@!headerItem.iterkeys().next()!@"
 
 # this is a mechanism to include additional targets
 #staticMakefileIncludes:

@@ -5,16 +5,24 @@
     <xsd:complexType>
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                <xsd:element ref="template"/>
+                <xsd:element ref="headerItem"/>
+                <xsd:element ref="someText"/>
             </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="template">
+    <xsd:element name="someText" />
+
+    <xsd:element name="headerItem">
         <xsd:complexType>
-            <xsd:attribute name="header" type="xsd:NCName" use="required" />
+            <xsd:attribute name="name" type="xsd:NCName" use="required" />
         </xsd:complexType>
+        <!-- playing around -->
+        <!-- <xsd:unique name="UniqueTemplateName"> -->
+        <!--     <xsd:selector xpath="template" /> -->
+        <!--     <xsd:field xpath="@name" /> -->
+        <!-- </xsd:unique> -->
     </xsd:element>
 
 </xsd:schema>

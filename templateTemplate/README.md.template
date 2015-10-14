@@ -2,8 +2,16 @@
     none
 <!--(end)-->
 
-# @!template[0]['header']!@
+#! rely on the "KeyAttr" of "xml2yaml", where elements with the "name" attribute are automatically parsed into a hash. extract the very first key of this hash. and we just know that there is only one "headerItem"
+# @!headerItem.iterkeys().next()!@
 
+<!--(for t in someText)-->
+@!t!@
+
+<!--(else)-->
+no text was provided.
+
+<!--(end)-->
 see [templateSetEngine][1].
 
 [1]: https://github.com/marvin2k/templateSetEngine

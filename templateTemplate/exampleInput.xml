@@ -4,6 +4,7 @@
     xsi:noNamespaceSchemaLocation="database.xsd"
     >
 
-    <template header="Stub" />
+    <headerItem name="NewTemplate" />
+    <someText>this is some text to be applied into the readme...</someText>
 
 </database>
