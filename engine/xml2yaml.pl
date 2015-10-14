@@ -24,6 +24,11 @@ if( ( not defined $ARGV[0]) or ( $ARGV[0] eq "-h" ) or ( $ARGV[0] eq "--help" ) 
 
 # this makes it "hard" to write/read code for the resulting yaml structure...
 # too much arrays with only one element.
+#
+# this can be fixed using "KeyAttr => { template => '+header' }"
+#
+# by the way, the default for KeyAttr is ['name', 'key', 'id'], so maybe
+# just choose our identifiers wisely?
 my $data = XMLin( $ARGV[0], ForceArray => 1 );
 
 # Setting this to a true value will make Load recognize various implicit types
