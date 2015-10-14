@@ -3,6 +3,7 @@
 """
 the templateSetEngine: a wrapper script for make
 """
+import warnings
 import argparse
 import subprocess
 import sys
