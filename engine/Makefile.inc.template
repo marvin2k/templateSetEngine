@@ -80,6 +80,7 @@ clean_template::
 <!--(if exists("copies"))-->
     <!--(for c in copies)-->
 $(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T_FILES)@!c["originalFilename"]!@ $(INTERNAL_DB) | $(O)
+	@mkdir --parent $(dir $(O)@!c["outFilename"]!@)
 	cp $< $@
 
 generate_template:: $(O)@!c["outFilename"]!@
