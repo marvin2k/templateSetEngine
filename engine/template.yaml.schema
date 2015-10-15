@@ -7,20 +7,20 @@ mapping:
   "xsdSchema":
     type: str
     type: str
-    required: yes
-  # are included from "$(T)"
+  # are included from "$(T_FILES)"
   "staticMakefileIncludes":
      type: seq
      sequence:
        - type: str
-  # are included from "$(O)" and the include is prepended with a "-" to hide
-  # errors (due to "not-there-yet", during ongoing bootstrap) in parsing
+  # are included from "$(O_STATE)" and the include is prepended with a "-" to hide
+  # errors (due to "not-there-yet", during ongoing bootstrap) in parsing.
+  # generated makefiles are ".PHONY"
   "generatedMakefileIncludes":
      type: seq
      sequence:
        - type: str
   # templates are files suitable to be processes by pyratemp using the provided
-  # database $(DB)
+  # database $(INTERNAL_DB). looked for in $(T_FILES)
   "templates":
      type: seq
      required: yes
@@ -40,7 +40,7 @@ mapping:
            "extraVariable":
               type: str
   # "copies" are files copied verbatim from the template-folder into some place
-  # inside the output folder
+  # inside the output folder. looked for in $(T_FILES)
   "copies":
      type: seq
      sequence:
