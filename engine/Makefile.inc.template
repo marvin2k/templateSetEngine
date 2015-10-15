@@ -35,8 +35,6 @@ $(O_STATE)@!inc!@: $(T_FILES)@!inc!@.template $(INTERNAL_DB) | $(O_STATE)
 # and one rule to clean it:
 clean_state::
 	rm -f $(O_STATE)@!inc!@
-# always recreate every makefile
-.PHONY: $(O_STATE)@!inc!@
     <!--(end)-->
 <!--(end)-->
 

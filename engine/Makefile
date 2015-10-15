@@ -112,8 +112,6 @@ verify:: $(O_STATE)meta.verified $(O_STATE)template.verified $(INTERNAL_DB)
 # "Makefile.inc" cannot be generated and the "template.yaml" can never be
 # verfied... more this kwalify call into the engine.py!
 -include $(O_STATE)Makefile.inc
-# one solution might be so make every generated makefile "PHONY"...?
-.PHONY: $(O_STATE)Makefile.inc
 
 # printing the info after all inclusions are done
 info::
