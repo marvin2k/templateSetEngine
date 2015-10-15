@@ -8,8 +8,6 @@ none
 #
 # generated at: @!date!@
 #
-# the set name is "@!templateSetName!@
-#
 # NOTE: available variables are
 # - $(T) will hold the actual folder of the template at runtime
 # - $(T_FILES) contains the folder where we find raw-template files

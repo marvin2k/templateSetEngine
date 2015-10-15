@@ -6,8 +6,6 @@ mapping:
   # if given the schema will be used to verify the user-provided database
   "xsdSchema":
     type: str
-  # not sure if this property will stay...
-  "templateSetName":
     type: str
     required: yes
   # are included from "$(T)"
