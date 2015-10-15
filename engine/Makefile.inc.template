@@ -27,8 +27,9 @@ include $(T_FILES)@!inc!@
 
 <!--(if exists("generatedMakefileIncludes"))-->
 # and @!len(generatedMakefileIncludes)!@ generated makefiles
-# one line to include it:
+#
     <!--(for inc in generatedMakefileIncludes)-->
+# one line to include it:
 -include $(O_STATE)@!inc!@
 # one rule to create it:
 $(O_STATE)@!inc!@: $(T_FILES)@!inc!@.template $(INTERNAL_DB) | $(O_STATE)
@@ -36,7 +37,8 @@ $(O_STATE)@!inc!@: $(T_FILES)@!inc!@.template $(INTERNAL_DB) | $(O_STATE)
 # and one rule to clean it:
 clean_state::
 	rm -f $(O_STATE)@!inc!@
-
+# always recreate every makefile
+.PHONY: $(O_STATE)@!inc!@
     <!--(end)-->
 <!--(end)-->
 
@@ -44,16 +46,21 @@ clean_state::
 # validation of optional schema file
 $(O_STATE)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O_STATE)
 	xmllint --noout --schema $(T)@!xsdSchema!@ $(DB) && touch $@
-
-# chain also to the "validate" target which is used by the main-makefile
-# to validate the template itself
+# chain also to the "validate" and clean targets
 verify:: $(O_STATE)database.verified
-# attach to the "clean temporary state" rule:
 clean_state::
 	rm -f $(O_STATE)database.verified
-
 <!--(else)-->
 # no schema provided, no validation possible
+$(O_STATE)database.verified: $(INTERNAL_DB) $(T)@!yamlSchema!@ | $(O_STATE)
+	kwalify -lf $(T)@!yamlSchema!@ $(INTERNAL_DB) > $@.out
+	@grep "$<#0: valid" $@.out >/dev/null \
+	    || (cat $@.out && rm -f $@ && false) \
+	    && (mv $@.out $@)
+# chain also to the "validate" and clean targets
+verify:: $(O_STATE)database.verified
+clean_state::
+	rm -f $(O_STATE)database.verified
 <!--(end)-->
 
 #
@@ -67,10 +74,8 @@ clean_state::
 $(O)@!t["outFilename"]!@ @!default("t['name']","")!@: $(T_FILES)@!t["templateFilename"]!@ $(INTERNAL_DB) | $(O)
 	@mkdir --parent $(dir $(O)@!t["outFilename"]!@)
 	$(PYRATEMP)  -f $(INTERNAL_DB) <!--(if default("t['extraVariable']"))-->-d @!t["extraVariable"]!@ <!--(end)--> $< > $(O)@!t["outFilename"]!@ || (rm $@ && false)
-
-# attach ourself to the "generate" meta target
+# and chain to the "generate" and "clean" meta target
 generate_template:: $(O)@!t["outFilename"]!@
-# add generated file to clean target
 clean_template::
 	rm -f $(O)@!t["outFilename"]!@
 
@@ -81,7 +86,7 @@ clean_template::
 $(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T_FILES)@!c["originalFilename"]!@ $(INTERNAL_DB) | $(O)
 	@mkdir --parent $(dir $(O)@!c["outFilename"]!@)
 	cp $< $@
-
+# and chain to the "generate" and "clean" meta target
 generate_template:: $(O)@!c["outFilename"]!@
 clean_template::
 	rm -f $(O)@!c["outFilename"]!@
