@@ -6,7 +6,6 @@ mapping:
   # if given the schema will be used to verify the user-provided database
   "xsdSchema":
     type: str
-    type: str
   # are included from "$(T_FILES)"
   "staticMakefileIncludes":
      type: seq
