@@ -12,36 +12,46 @@ none
 # the set name is "@!templateSetName!@
 #
 # NOTE: available variables are
-# - $(T) will hold the actual folder of the template at runtime
-# - $(O) is the output folder
+# - $(T) will hold the actual folder of the template at runtime, and $(T_FILES)
+#   contains the folder where we find raw-template files
+# - $(O) is the output folder for the generated template-files, and $(O_STATE)
+#   should contain files needed by the template-engine itself
 # - $(INTERNAL_DB) is the real intput-database after it was optionall converted
 #   into yaml by the main-makefile
 
 <!--(if exists("staticMakefileIncludes"))-->
 # template set consists of @!len(staticMakefileIncludes)!@ additional static makefiles:
     <!--(for inc in staticMakefileIncludes)-->
-include $(T)@!inc!@
+include $(T_FILES)@!inc!@
     <!--(end)-->
 <!--(end)-->
 
 <!--(if exists("generatedMakefileIncludes"))-->
-# and @!len(generatedMakefileIncludes)!@ generated makefiles:
+# and @!len(generatedMakefileIncludes)!@ generated makefiles
+# one line to include it:
     <!--(for inc in generatedMakefileIncludes)-->
--include $(O)@!inc!@
+-include $(O_STATE)@!inc!@
+# one rule to create it:
+$(O_STATE)@!inc!@: $(T_FILES)@!inc!@.template $(INTERNAL_DB) | $(O_STATE)
+	$(PYRATEMP)  -f $(INTERNAL_DB) $< > $@ || (rm $@ && false)
+# and one rule to clean it:
+clean_state::
+	rm -f $(O_STATE)@!inc!@
+
     <!--(end)-->
 <!--(end)-->
 
 <!--(if exists("xsdSchema"))-->
 # validation of optional schema file
-$(O)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O)
+$(O_STATE)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O_STATE)
 	xmllint --noout --schema $(T)@!xsdSchema!@ $(DB) && touch $@
 
 # chain also to the "validate" target which is used by the main-makefile
 # to validate the template itself
-verify:: $(O)database.verified
+verify:: $(O_STATE)database.verified
 # attach to the "clean temporary state" rule:
 clean_state::
-	rm -f $(O)database.verified
+	rm -f $(O_STATE)database.verified
 
 <!--(else)-->
 # no schema provided, no validation possible
@@ -53,7 +63,9 @@ clean_state::
 
 <!--(for templ in templates)-->
 # output rule for $(O)@!templ["outFilename"]!@
-$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T)@!templ["templateFilename"]!@ $(INTERNAL_DB) $(O)Makefile.inc | $(O)
+#! needs this infamous "mkdir" hack in case a files needs to be created into a
+#! subdirectory....
+$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T_FILES)@!templ["templateFilename"]!@ $(INTERNAL_DB) | $(O)
 	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
 	$(PYRATEMP)  -f $(INTERNAL_DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $@ && false)
 
@@ -67,7 +79,7 @@ clean_template::
 
 <!--(if exists("copies"))-->
     <!--(for c in copies)-->
-$(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T)@!c["originalFilename"]!@ $(INTERNAL_DB) $(O)Makefile.inc | $(O)
+$(O)@!c["outFilename"]!@ @!default("c['name']","")!@: $(T_FILES)@!c["originalFilename"]!@ $(INTERNAL_DB) | $(O)
 	cp $< $@
 
 generate_template:: $(O)@!c["outFilename"]!@
