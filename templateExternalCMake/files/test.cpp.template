@@ -1,0 +1,5 @@
+<!--(set_escape)-->
+    none
+<!--(end)-->
+
+int @!what[0]!@ = 1;

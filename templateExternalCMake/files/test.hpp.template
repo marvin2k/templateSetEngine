@@ -1,0 +1,9 @@
+<!--(set_escape)-->
+    none
+<!--(end)-->
+#ifndef TEST_HEADER
+#define TEST_HEADER
+
+extern int @!what[0]!@;
+
+#endif
