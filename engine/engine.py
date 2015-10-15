@@ -72,4 +72,7 @@ database="DB="+args.database
 # and finally calling make! could add more code for error recovery, deleting a wrong $(O)Makefile.inc for example
 retval = subprocess.call(["make", "-f", mainMakefile, outdir, templateSet, database]+args.target+remainder)
 
+if retval == 2:
+    print "\n'make' encountered an error; consider deleting outdir '%s'" % (os.path.realpath(args.outdir))
+
 sys.exit(retval)
