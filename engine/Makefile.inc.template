@@ -61,19 +61,19 @@ clean_state::
 # now all the templates given in the config file
 #
 
-<!--(for templ in templates)-->
-# output rule for $(O)@!templ["outFilename"]!@
+<!--(for t in templates)-->
+# output rule for $(O)@!t["outFilename"]!@
 #! needs this infamous "mkdir" hack in case a files needs to be created into a
 #! subdirectory....
-$(O)@!templ["outFilename"]!@ @!default("templ['name']","")!@: $(T_FILES)@!templ["templateFilename"]!@ $(INTERNAL_DB) | $(O)
-	@mkdir --parent $(dir $(O)@!templ["outFilename"]!@)
-	$(PYRATEMP)  -f $(INTERNAL_DB) <!--(if default("templ['extraVariable']"))-->-d @!templ["extraVariable"]!@ <!--(end)--> $< > $(O)@!templ["outFilename"]!@ || (rm $@ && false)
+$(O)@!t["outFilename"]!@ @!default("t['name']","")!@: $(T_FILES)@!t["templateFilename"]!@ $(INTERNAL_DB) | $(O)
+	@mkdir --parent $(dir $(O)@!t["outFilename"]!@)
+	$(PYRATEMP)  -f $(INTERNAL_DB) <!--(if default("t['extraVariable']"))-->-d @!t["extraVariable"]!@ <!--(end)--> $< > $(O)@!t["outFilename"]!@ || (rm $@ && false)
 
 # attach ourself to the "generate" meta target
-generate_template:: $(O)@!templ["outFilename"]!@
+generate_template:: $(O)@!t["outFilename"]!@
 # add generated file to clean target
 clean_template::
-	rm -f $(O)@!templ["outFilename"]!@
+	rm -f $(O)@!t["outFilename"]!@
 
 <!--(end)-->
 
