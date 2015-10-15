@@ -1,0 +1,18 @@
+<!--(set_escape)-->
+    none
+<!--(end)-->
+cmake_minimum_required(VERSION 2.8)
+
+project(@!projectname[0]!@)
+
+set(SOURCES test.cpp)
+set(HEADERS test.hpp)
+
+add_library(${PROJECT_NAME} ${SOURCES})
+
+install(TARGETS ${PROJECT_NAME}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)
+
+install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})

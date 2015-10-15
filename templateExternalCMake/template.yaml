@@ -1,0 +1,11 @@
+---
+xsdSchema: "database.xsd"
+
+templates:
+    - templateFilename: "CMakeLists.txt.template"
+      outFilename: "CMakeLists.txt"
+    - templateFilename: "test.cpp.template"
+      outFilename: "test.cpp"
+    - templateFilename: "test.hpp.template"
+      outFilename: "test.hpp"
+...
