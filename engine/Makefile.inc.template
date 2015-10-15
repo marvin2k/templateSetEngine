@@ -1,22 +1,21 @@
 <!--(set_escape)-->
 none
 <!--(end)-->
-# automatically generated to use make for dependency resolution of
-# template generation. do not edit.
+# automatically generated to use 'make' for dependency resolution of single
+# steps for generating a templateSet. do not edit.
 #
-# generated from template description in:
-# @!templateDatabase!@
+# generated from template description in: @!templateDatabase!@
 #
 # generated at: @!date!@
 #
 # the set name is "@!templateSetName!@
 #
 # NOTE: available variables are
-# - $(T) will hold the actual folder of the template at runtime, and $(T_FILES)
-#   contains the folder where we find raw-template files
-# - $(O) is the output folder for the generated template-files, and $(O_STATE)
-#   should contain files needed by the template-engine itself
-# - $(INTERNAL_DB) is the real intput-database after it was optionall converted
+# - $(T) will hold the actual folder of the template at runtime
+# - $(T_FILES) contains the folder where we find raw-template files
+# - $(O) is the output folder for the generated template-files
+# - $(O_STATE) should contain files needed by the template-engine itself
+# - $(INTERNAL_DB) is the real input-database after it was optionally converted
 #   into yaml by the main-makefile
 
 <!--(if exists("staticMakefileIncludes"))-->

@@ -53,23 +53,28 @@ sysdeps::
 
 
 # this... is... getting.. fucking... complicated...
-ifeq (.xml,$(suffix $(DB)))
-
-$(O_STATE)database.yaml: $(DB) | $(O_STATE)
-	perl $(E)xml2yaml.pl $< > $@
-
-else ifeq (.yaml,$(suffix $(DB)))
-
-$(O_STATE)database.yaml: $(DB) | $(O_STATE)
-	cp $< $@
-else
-    $(warning the suffix '$(suffix $(DB))' for $(DB) is unkown?)
-endif
-
+#
+# it is possible to put yaml- or xml-databases into the tool. it either
+# converts a xml-database into yaml or copies the yaml. both cases the
+# resulting "database.yaml"  is put into the $(O_STATE)-folder.
 INTERNAL_DB=$(O_STATE)database.yaml
-
+# when cleaning state, remove the additional yaml-database
 clean_state::
 	rm -f $(INTERNAL_DB)
+# and then check the suffix of the provided $(DB). first the "xml"-case
+ifeq (.xml,$(suffix $(DB)))
+# convert xml to yaml. not perfect, but it works (tm).
+$(O_STATE)database.yaml: $(DB) | $(O_STATE)
+	perl $(E)xml2yaml.pl $< > $@
+# second the "yaml" case
+else ifeq (.yaml,$(suffix $(DB)))
+# just copy
+$(O_STATE)database.yaml: $(DB) | $(O_STATE)
+	cp $< $@
+# and error out in any other case
+else
+    $(error the suffix '$(suffix $(DB))' for $(DB) is unkown?)
+endif
 
 # declare some self-verification before including the generated Makefile.
 # this way we perform these steps before trying to optional verify the
@@ -79,35 +84,36 @@ clean_state::
 
 # verify the schema for the "template.yaml" templateSet description
 #
-# TODO: this is broken... if the "template.yaml" is not correct, the
-# "Makefile.inc" cannot be generated and the "template.yaml" can never be
-# verfied... more this kwalify call into the engine.py!
-#
 # great, the return value of kwalify is always zero... directly piping to
 # grep will hide the error message... so output into "out" file, grep
 # separatly to check. output the error or create the target of recipe.
-$(O_STATE)template.verified: $(T_DB) $(T_SCH) | $(O_STATE)
-	kwalify -lf $(T_SCH) $(T_DB) > $@.out
-	@grep "$<#0: valid" $@.out >/dev/null \
-	    || (cat $@.out && rm -f $@ && false) \
-	    && (mv $@.out $@)
-
+#
 # verify the schema itself. i don't think this has to be done often. but it can't hurt either ;-)
 $(O_STATE)meta.verified: $(T_SCH) | $(O_STATE)
 	kwalify -lm $< > $@.out
 	@grep "$<#0: valid" $@.out >/dev/null \
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
+# and then verify the actual "template.yaml"
+$(O_STATE)template.verified: $(T_DB) $(T_SCH) | $(O_STATE)
+	kwalify -lf $(T_SCH) $(T_DB) > $@.out
+	@grep "$<#0: valid" $@.out >/dev/null \
+	    || (cat $@.out && rm -f $@ && false) \
+	    && (mv $@.out $@)
 
 # this is used to collect the various "validation" steps. this additionally
-# includes the input database, which is converted from xml to yaml or copied
-# into the state-folder
+# includes the converted input database.
 verify:: $(O_STATE)meta.verified $(O_STATE)template.verified $(INTERNAL_DB)
 
-# Note: if there is an syntax error in the generated Makefile.in, the
-# file has to be deleted manually... also a problem: when this file is
-# empty it will not be regenerated and nothing happens
+# Note: if there is an syntax error in the generated $(O_STATE)Makefile.in, the
+# file has to be deleted manually...
+#
+# TODO: this is broken... if the "template.yaml" is not correct, the
+# "Makefile.inc" cannot be generated and the "template.yaml" can never be
+# verfied... more this kwalify call into the engine.py!
 -include $(O_STATE)Makefile.inc
+# one solution might be so make every generated makefile "PHONY"...?
+.PHONY: $(O_STATE)Makefile.inc
 
 # printing the info after all inclusions are done
 info::
@@ -122,15 +128,14 @@ info::
 	@echo "database: '$(DB)'"
 	@echo "pyratemp: '$(PYRATOOL)'"
 
-# for the time beeing: obtain the tool if it is not there. this is
-# silently broken... manually downloading it is strongly advised.
+# for the time beeing: obtain the underlying template-engine.
 $(E)pyratemp-0.3.2/pyratemp_tool.py:
 	wget -qO- http://www.simple-is-better.org/template/pyratemp-0.3.2.tgz \
 	    | tar xvz --directory $(E)
 
 pyratemp: $(E)pyratemp-0.3.2/pyratemp_tool.py
 
-# create output directory
+# create output directories
 $(O):
 	mkdir --parent $@
 $(O_STATE):
@@ -143,18 +148,19 @@ $(O_STATE):
 $(O_STATE)Makefile.inc: $(E)Makefile.inc.template $(T_DB) | $(O_STATE) pyratemp
 	$(PYRATEMP) -d templateDatabase=$(T_DB) -f $(T_DB) $< > $@ || (rm $@ && false)
 
+# this is the collection of the main-task: first verify everything,
+# then generate the templates.
+generate: verify generate_template
+	@echo "generate done!"
+
 # diligent cleaning
 clean: clean_state clean_template
 
-# this target does deletes all temporary state-files created by the
-# template-engine for itself. at the end the state-folder is "rmdir"ed, in the
-# hope that its actually empty.
+# this target does delete all temporary state-files created by the
+# template-engine for its own usage. at the end the state-folder is "rmdir"ed,
+# in the hope that its actually empty.
 clean_state::
 	rm -f $(O_STATE)Makefile.inc
 	rm -f $(O_STATE)meta.verified $(O_STATE)template.verified
 	rmdir $(O_STATE)
 
-# this is the collection of the main-task: first verify everything,
-# then generate the templates.
-generate: verify generate_template
-	@echo "generate done!"
