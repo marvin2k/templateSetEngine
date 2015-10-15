@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<database
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="database.xsd"
+    >
+
+    <headerItem name="NewTemplate" />
+    <someText>this is some text to be applied into the readme...</someText>
+
+</database>
