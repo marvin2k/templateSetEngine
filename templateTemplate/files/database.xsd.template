@@ -8,10 +8,7 @@
 
   <xsd:element name="database">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-      <xsd:anyAttribute processContents="skip"/>
+      <xsd:element name="what" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 

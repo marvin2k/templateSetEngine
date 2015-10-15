@@ -14,7 +14,8 @@ copies:
     - originalFilename: "exampleInput.xml"
       outFilename: "exampleInput.xml"
     - originalFilename: "some.file.template"
-      outFilename: "some.file.template"
+      # FIXME: hardcoded "files" subdir...
+      outFilename: "files/some.file.template"
       # will not automatically include this (empty) makefile stub. but it shows
       # a way how to add steps into the generation process:
     # - originalFilename: "Makefile.sysdeps"
