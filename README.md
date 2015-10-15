@@ -4,19 +4,11 @@ Solves the problem of configuring a set of template files according to an
 external database. Therefore it uses a simple python based template engine to
 process the individual files.
 
-The templateSet itself is located in the directory pointed to by `$(T)`, the
-database used to fill them is in `$(DB)` and the resulting files will be put
-into `$(O)`. The engine is located in `$(E)`.
-
-## Collection of files: the 'templateSet'
-
-Set of files resident in the `$(T)` folder. They form a collection of files
-together with a `$(T)template.yaml` describing what files have to be processes.
-See `engine/template.yaml.schema` what is allowed.
-
-Each templateSet is suitable for one type of input database understood by
-[pyratemp][1] (which is yaml or json). Pyratemp was chosen because it tries to
-leverage a strong model/view separation and looks simple enough.
+So, this tool can:
+- Apply a database onto a static collection of files. Configure each file according to
+  information from the common database.
+- Apply a database onto a dynamic number of files, where new files are created
+  and configured according to information from the database.
 
 ## Idea
 
@@ -35,6 +27,10 @@ Contra:
   the output folder.
 - The syntax of Makefiles is sometimes not very straight-forward. Well, it is
   used to solve a complex problem.
+
+The templateSet itself is located in the directory pointed to by `$(T)`, the
+database used to fill them is in `$(DB)` and the resulting files will be put
+into `$(O)`. The engine is located in `$(E)`.
 
 ## Design
 
@@ -56,11 +52,20 @@ generation process to allow additional transformation steps.
 Extra variables can optionally be passed from the `$(T)template.yaml` into the
 models of each template file.
 
+## Collection of files: the 'templateSet'
+
+Set of files resident in the `$(T)` folder. They form a collection of files
+together with a `$(T)template.yaml` describing what files have to be processes.
+See `engine/template.yaml.schema` what is allowed.
+
+Each templateSet is suitable for one type of input database understood by
+[pyratemp][1] (which is yaml or json). Pyratemp was chosen because it tries to
+leverage a strong model/view separation and looks simple enough.
+
 ## Validation
 
-The tool uses [kwalify][2] to verify the `$(T)template.yaml` of a templateSet
-and optionally the user-provided database. To mark successful verification, the
-following files are created:
+The tool uses [kwalify][2] to verify the `$(T)template.yaml` of a templateSet.
+To mark successful verification, the following files are created:
 
 - `$(O)meta.verified`: The description of the tools schema file for the
   `$(T)template.yaml` is correct. This step prevent the developer of the tool from making
@@ -136,6 +141,8 @@ accidentally around the wrong thing...
   problem: cmake cannot re-execute itself after initial configuration (make
   can). so: have an including CMakeLists.txt with an "ExternalProject()"
   referencing a makefile based mini-lib. there, some CMakeLists is generated
+- add "createNewTemplate" option to wrapper script. needs more reading into
+  pythons option  library.
 
 [1]: http://www.simple-is-better.org/template
 [2]: http://www.kuwata-lab.com/kwalify

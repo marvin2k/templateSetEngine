@@ -1,41 +1,51 @@
-# set these from outside
-ifndef T
-    $(error set directory of templateSet to T)
-endif
-ifndef O
-    $(error set output directory of templateSet to O)
-endif
-ifndef DB
-    $(error set location of database to DB)
-endif
 # check this:
 ifdef INTERNAL_DB
     $(error _not_ set INTERNAL_DB!)
 endif
 
-# some variables:
-#
 # the location of the engine itself. needs to use immidiate expansion!
 E:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+# we _can_ run locally, but this is not the real way to use it.
+ifeq ("$(shell pwd)/","$(E)")
+    $(error Should not be executing the template engine in local dir.)
+endif
+
 # how to call the tool we actually rely on
 PYRATOOL=$(E)pyratemp-0.3.2/pyratemp_tool.py
 PYRATEMP=python $(PYRATOOL)
-# the database describing the templateSet
-T_DB=$(T)template.yaml
 # the schema of the 'template.yaml' description is part of the tool
 T_SCH=$(E)template.yaml.schema
+
+# should set these from outside. but provide sensible defaults which will
+# create a new template from the "templateTemplate".
+ifndef T
+    T=$(E)../templateTemplate/
+    $(warning Setting template directory '$$(T)' of templateSet to default '$(T)')
+endif
+ifndef O
+    O=out/
+    $(warning Setting output directory '$$(O)' of templateSet to default '$(O)')
+endif
+ifndef DB
+    DB=$(T)exampleInput.xml
+    $(warning Setting location of database '$$(DB)' to default '$(DB)')
+endif
+
+# the database describing the templateSet
+T_DB=$(T)template.yaml
 # the actual template files will be found here
 T_FILES?=$(T)files/
 # we'll put temporary files of the template engine here
 O_STATE?=$(O)state/
 
-# checking file existence
+# checking existence of template description
 ifeq ("$(wildcard $(T_DB))","")
-    $(error no templateSet description 'template.yaml' found in template folder '$(T)')
+    $(error No templateSet description 'template.yaml' found in template folder '$(T)')
 endif
 
 # if we do not know what to do then just start to work
-all: verify generate
+all: state verify generate clean_state
 
 # self-documenting ,-)
 sysdeps::
@@ -60,9 +70,6 @@ INTERNAL_DB=$(O_STATE)database.yaml
 
 clean_state::
 	rm -f $(INTERNAL_DB)
-
-# FIXME: this is not needed?
-generate_template:: $(INTERNAL_DB)
 
 # declare some self-verification before including the generated Makefile.
 # this way we perform these steps before trying to optional verify the
@@ -92,9 +99,10 @@ $(O_STATE)meta.verified: $(T_SCH) | $(O_STATE)
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
 
-# this is used to collect the various "validation" steps. the generated
-# Makefile.inc might attach here.
-verify:: $(O_STATE)meta.verified $(O_STATE)template.verified
+# this is used to collect the various "validation" steps. this additionally
+# includes the input database, which is converted from xml to yaml or copied
+# into the state-folder
+verify:: $(O_STATE)meta.verified $(O_STATE)template.verified $(INTERNAL_DB)
 
 # Note: if there is an syntax error in the generated Makefile.in, the
 # file has to be deleted manually... also a problem: when this file is
