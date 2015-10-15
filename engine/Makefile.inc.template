@@ -61,6 +61,17 @@ clean_state::
 	rm -f $(O_STATE)database.verified
 <!--(end)-->
 
+# verify every template file for syntax errors
+<!--(for t in templates)-->
+$(O_STATE)@!t['templateFilename']!@.syntaxok: $(T_FILES)@!t['templateFilename']!@ | $(O)
+	$(PYRATEMP) -s $< && touch $@
+# verify each template's syntax, clean the files afterwards
+verify:: $(O_STATE)@!t['templateFilename']!@.syntaxok
+clean_state::
+	$(O_STATE)@!t['templateFilename']!@.syntaxok
+
+<!--(end)-->
+
 #
 # now all the templates given in the config file
 #
