@@ -16,3 +16,12 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})
+
+# exporting does only make sense when not installing?
+export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}-config.cmake )
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-config.cmake
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    )
