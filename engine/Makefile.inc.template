@@ -66,7 +66,7 @@ $(O_STATE)@!t['templateFilename']!@.syntaxok: $(T_FILES)@!t['templateFilename']!
 # verify each template's syntax, clean the files afterwards
 verify:: $(O_STATE)@!t['templateFilename']!@.syntaxok
 clean_state::
-	$(O_STATE)@!t['templateFilename']!@.syntaxok
+	rm -f $(O_STATE)@!t['templateFilename']!@.syntaxok
 
 <!--(end)-->
 
