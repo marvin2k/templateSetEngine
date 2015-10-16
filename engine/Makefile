@@ -101,7 +101,7 @@ $(O_STATE)template.verified: $(T_DB) $(T_SCH) | $(O_STATE)
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
 
-# this is used to collect the various "validation" steps. this additionally
+# this is used to collect the various "verification" steps. this additionally
 # includes the converted input database.
 verify:: $(O_STATE)meta.verified $(O_STATE)template.verified $(INTERNAL_DB)
 
@@ -153,12 +153,13 @@ generate: verify generate_template
 
 # diligent cleaning
 clean: clean_state clean_template
+	rmdir $(O_STATE)
 
 # this target does delete all temporary state-files created by the
 # template-engine for its own usage. at the end the state-folder is "rmdir"ed,
 # in the hope that its actually empty.
 clean_state::
 	rm -f $(O_STATE)Makefile.inc
-	rm -f $(O_STATE)meta.verified $(O_STATE)template.verified
-	rmdir $(O_STATE)
+	rm -f $(O_STATE)meta.verified
+	rm -f $(O_STATE)template.verified
 

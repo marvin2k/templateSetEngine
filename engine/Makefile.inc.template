@@ -39,21 +39,21 @@ clean_state::
 <!--(end)-->
 
 <!--(if exists("xsdSchema"))-->
-# validation of optional schema file
+# verification of optional schema file
 $(O_STATE)database.verified: $(DB) $(T)@!xsdSchema!@ | $(O_STATE)
 	xmllint --noout --schema $(T)@!xsdSchema!@ $(DB) && touch $@
-# chain also to the "validate" and clean targets
+# chain also to the "verify" and "clean" targets
 verify:: $(O_STATE)database.verified
 clean_state::
 	rm -f $(O_STATE)database.verified
 <!--(else)-->
-# no schema provided, no validation possible
+# no schema provided, no verification possible
 $(O_STATE)database.verified: $(INTERNAL_DB) $(T)@!yamlSchema!@ | $(O_STATE)
 	kwalify -lf $(T)@!yamlSchema!@ $(INTERNAL_DB) > $@.out
 	@grep "$<#0: valid" $@.out >/dev/null \
 	    || (cat $@.out && rm -f $@ && false) \
 	    && (mv $@.out $@)
-# chain also to the "validate" and clean targets
+# chain also to the "verify" and "clean" targets
 verify:: $(O_STATE)database.verified
 clean_state::
 	rm -f $(O_STATE)database.verified
